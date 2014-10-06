@@ -1,8 +1,8 @@
 {
-  "name": "sameValuesAs",
+  "name": "same-values-as",
   "version": "0.0.0",
   "description": "A very relaxed 'deep equals' that allows for any order in arrays, even if array values are objects",
-  "main": "sameValuesAs.js",
+  "main": "same-values-as.js",
   "scripts": {
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
