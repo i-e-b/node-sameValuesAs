@@ -2,8 +2,8 @@
 var global, exports;
 
 function sortObject(a,b) {
-    var sa = JSON.stringify(a);
-    var sb = JSON.stringify(b);
+    var sa = JSON.stringify(a).split('').sort().join('');
+    var sb = JSON.stringify(b).split('').sort().join('');
     if (sa < sb) return -1;
     if (sa > sb) return 1;
     return 0;
@@ -11,9 +11,17 @@ function sortObject(a,b) {
 
 function sameValuesAs (actual, expected) {
     if (actual === expected) return true;
-    if (actual instanceof Date && expected instanceof Date) return actual.getTime() === expected.getTime();
+    if (dateLike(actual) && (dateLike(expected) === dateLike(actual))) return true; // optimistic date comparison
     if (typeof actual != 'object' && typeof expected != 'object') return actual === expected;
+        
     return objectSameValues(actual, expected);
+}
+
+function dateLike(val) {
+    if (val instanceof Date) return val.getTime();
+    var maybeDate = Date.parse(val);
+    if (Number.isNaN(maybeDate)) return undefined;
+    return maybeDate;
 }
 
 function objectSameValues(a, b) {
@@ -47,7 +55,10 @@ function objectSameValues(a, b) {
 
     var arrays = Array.isArray(a);
     if (arrays) {
-        if (! Array.isArray(b)) return false;
+        if (! Array.isArray(b)) {
+            return false;
+        }
+
         // sort both arrays for testing below
         a.sort(sortObject); // this is very expensive,
         b.sort(sortObject); // but does the trick for just about anything.

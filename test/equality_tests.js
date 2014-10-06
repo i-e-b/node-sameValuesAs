@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 
-var cmp = require("../sameValuesAs.js").compare;
+var cmp = require("../same-values-as.js").compare;
 
 describe("Comparing values", function() {
     it("should consider identical values as equal", function(){
@@ -19,6 +19,10 @@ describe("Comparing values", function() {
         expect(cmp({},{"1":1})).to.be.false;
         expect(cmp("hello","world")).to.be.false;
         expect(cmp({"hello":"world"},{"goodbye":"world"})).to.be.false;
+    });
+
+    it("should treat date like strings as equal", function(){
+        expect(cmp("Mon Oct 06 2014","Mon Oct 06 2014 00:00:00")).to.be.true;
     });
 
     it("should consider null and undefined as equivalent and equal", function(){

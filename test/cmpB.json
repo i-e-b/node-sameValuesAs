@@ -1,0 +1,32 @@
+{
+  "ID": "1000",
+  "OrderItem": [
+    {
+      "ID": 2000,
+      "CreationDate": "2014-09-19T00:00:00Z",
+      "OrderAction": "add",
+      "Product": {
+        "CharacteristicUse": [],
+        "RateAttribute": [],
+        "ConfiguredValue": [],
+        "ID": "11111",
+        "EntityID": "a"
+      },
+      "ChildOrderItem": [
+        {
+          "ID": "3000",
+          "OrderAction": "add",
+          "Product": {
+            "CharacteristicUse": [],
+            "RateAttribute": [],
+            "ConfiguredValue": [],
+            "ID": "22222",
+            "EntityID": "b"
+          },
+          "ChildOrderItem": []
+        }
+      ]
+    }
+  ]
+}
+
