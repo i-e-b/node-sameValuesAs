@@ -1,0 +1,37 @@
+{
+  "name": "sameValuesAs",
+  "version": "0.0.0",
+  "description": "A very relaxed 'deep equals' that allows for any order in arrays, even if array values are objects",
+  "main": "sameValuesAs.js",
+  "scripts": {
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/i-e-b/node-sameValuesAs.git"
+  },
+  "keywords": [
+    "test",
+    "equals",
+    "equality",
+    "deep",
+    "relaxed",
+    "array",
+    "order"
+  ],
+  "author": "ieb",
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "https://github.com/i-e-b/node-sameValuesAs/blob/master/LICENSE"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/i-e-b/node-sameValuesAs/issues"
+  },
+  "homepage": "https://github.com/i-e-b/node-sameValuesAs",
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "mocha": "^1.21.4"
+  }
+}
