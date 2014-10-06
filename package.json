@@ -1,6 +1,6 @@
 {
   "name": "same-values-as",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A very relaxed 'deep equals' that allows for any order in arrays, even if array values are objects",
   "main": "same-values-as.js",
   "scripts": {

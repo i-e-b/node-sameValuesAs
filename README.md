@@ -10,7 +10,7 @@ Usage
 -----
 
 ```javascript
-    var compare = require("../sameValuesAs.js").compare;
+    var compare = require("../same-values-as.js").compare;
 
     compare(1, [1]);            // false
     compare([1,2,3] , [3,2,1]); // true
