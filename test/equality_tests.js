@@ -13,12 +13,13 @@ describe("Comparing values", function() {
     });
 
     it("should consider different values as not equal", function(){
-        expect(cmp(1,2)).to.be.false;
-        expect(cmp([],[1])).to.be.false;
-        expect(cmp([],null)).to.be.false;
-        expect(cmp({},{"1":1})).to.be.false;
-        expect(cmp("hello","world")).to.be.false;
-        expect(cmp({"hello":"world"},{"goodbye":"world"})).to.be.false;
+        AreNotEqual(function() { cmp(1,2); });
+        AreNotEqual(function() { cmp([],[1]); });
+        AreNotEqual(function() { cmp([],null); });
+        AreNotEqual(function() { cmp([],null); });
+        AreNotEqual(function() { cmp({},{"1":1}); });
+        AreNotEqual(function() { cmp("hello","world"); });
+        AreNotEqual(function() { cmp({"hello":"world"},{"goodbye":"world"}); });
     });
 
     it("should treat date like strings as equal", function(){
@@ -33,10 +34,11 @@ describe("Comparing values", function() {
     });
 
     it("should consider null or undefined to no equal empty objects and arrays", function(){
-        expect(cmp(null,[])).to.be.false;
-        expect(cmp(undefined, [])).to.be.false;
-        expect(cmp(null, {})).to.be.false;
-        expect(cmp(undefined,{})).to.be.false;
+
+        AreNotEqual(function() { cmp(null,[]); });
+        AreNotEqual(function() { cmp(undefined, []); });
+        AreNotEqual(function() { cmp(null, {}); });
+        AreNotEqual(function() { cmp(undefined,{}); });
     });
 
     it("should consider arrays to be equal if they contain the same values, regardless of order",function(){
@@ -44,14 +46,9 @@ describe("Comparing values", function() {
                 [1,2,3,4,5],
                 [5,3,1,4,2]
                 )).to.be.true;
-        expect(cmp(
-                [3,4,5],
-                [5,3,1,4,2]
-                )).to.be.false;
-        expect(cmp(
-                [1,2,3,4,5],
-                [1,4,2]
-                )).to.be.false;
+
+        AreNotEqual(function() { cmp([3,4,5], [5,3,1,4,2]); });
+        AreNotEqual(function() { cmp([1,2,3,4,5], [1,4,2]); });
     });
 
     it("should consider arrays of objects equal if they contain matching children, regardless of order",function(){
@@ -59,17 +56,19 @@ describe("Comparing values", function() {
                 [{"a":{"b":"c","d":"e"}, "x":['y','z']}],
                 [{"x":['z','y'], "a":{"d":"e","b":"c"}}]
                 )).to.be.true;
-        expect(cmp(
-                [{"a":{"b":"XXX","d":"e"}, "x":['y','XXX']}],
-                [{"x":['z','y'], "a":{"d":"e","b":"c"}}]
-                )).to.be.false;
+
+        AreNotEqual(function(){
+            cmp([{"a":{"b":"XXX","d":"e"}, "x":['y','XXX']}], 
+                [{"x":['z','y'], "a":{"d":"e","b":"c"}}]);
+        });
     });
 
     it("doesn't compare functions",function(){
-        expect(cmp(
-                {"a":function(a,b){}},
-                {"a":function(a,b){}}
-                )).to.be.false;
+
+        AreNotEqual(function() 
+        {
+            cmp({"a":function(a,b){}}, {"a":function(a,b){}});
+        });
     });
 
     // this one is specifically for testing input/output wire formats
@@ -80,4 +79,24 @@ describe("Comparing values", function() {
                 )).to.be.true;
     });
 });
+
+/**
+* Executes a comparison and asserts that an exception was thrown
+*/
+function AreNotEqual(action)
+{
+    var exceptionThrown = false;
+
+    try
+    {
+        action();
+    }
+    catch (err)
+    {
+        exceptionThrown = true;
+    }
+
+    expect(exceptionThrown).to.be.true;
+
+}
 
