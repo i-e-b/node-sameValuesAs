@@ -12,7 +12,7 @@ Usage
 ```javascript
     var compare = require("../same-values-as.js").compare;
 
-    compare(1, [1]);            // false
+    compare(1, [1]);            // throws an exception telling you what the first difference is
     compare([1,2,3] , [3,2,1]); // true
 ```
 
@@ -20,6 +20,7 @@ Features
 --------
 * Considers `null` and `undefined` to be equal
 * Compares the contents of arrays regardless of order (even if the children are object)
+* Throws an error if the objects don't match and tells you the first difference
 * Considers a property with an empty array to equal a missing property
 
 That last one should be explained:
