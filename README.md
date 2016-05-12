@@ -10,17 +10,18 @@ Usage
 -----
 
 ```javascript
-    var compare = require("../same-values-as.js").compare;
+    var compare = require("same-values-as").compare;
 
     compare(1, [1]);            // throws an exception telling you what the first difference is
-    compare([1,2,3] , [3,2,1]); // true
+    compare([1,2,3] , [3,2,1]); // returns true with no exception
 ```
 
 Features
 --------
 * Considers `null` and `undefined` to be equal
-* Compares the contents of arrays regardless of order (even if the children are object)
-* Throws an error if the objects don't match and tells you the first difference
+* Compares the contents of arrays regardless of order (even if the children are objects)
+* Throws an error if the objects don't match and tells you the first difference, with a path in the object.
+* Tries to compare dates in a relaxed way (including where they are in strings or tick values)
 * Considers a property with an empty array to equal a missing property
 
 That last one should be explained:

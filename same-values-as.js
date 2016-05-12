@@ -9,18 +9,30 @@ function sortObject(a,b) {
     return 0;
 }
 
+function OK(reason) {
+    //console.log(reason); // comment in to hunt things down
+    return true;
+}
+
+function primitiveValue(x) {
+    return (['boolean','number','string','symbol'].indexOf(typeof x) >= 0) ? x : null;
+}
+
 function sameValuesAs (actual, expected) {
-    return recurseObject(actual, expected, '');
+    return recurseObject(actual, expected, '<root>');
 }
 
 function recurseObject(actual, expected, message) {
-    if (actual === expected) return true;
-    if (dateLike(actual) && (dateLike(expected) === dateLike(actual))) return true; // optimistic date comparison
+    if (actual === expected) return OK('equal values by ===');
+    if (dateLike(actual) && (dateLike(expected) === dateLike(actual))) return OK('equal dates'); // optimistic date comparison
+
+    if (primitiveValue(actual) !== primitiveValue(expected)) throw new Error(message + ' Primitive values are not equal');
 
     return objectSameValues(actual, expected, message);
 }
 
 function dateLike(val) {
+    if (typeof val === 'number' && val < 1E9) return undefined; // date parsing in recent versions of Node has got worse.
     if (val instanceof Date) return val.getTime();
     var maybeDate = Date.parse(val);
     if (Number.isNaN(maybeDate)) return undefined;
@@ -28,45 +40,38 @@ function dateLike(val) {
 }
 
 function objectSameValues(a, b, message) {
+    if (isUndefinedOrNull(a) && isUndefinedOrNull(b)) return OK('both null or undefined');
+    if (isUndefinedOrNull(a) || isUndefinedOrNull(b)) throw new Error(message + ' Object instances do not match');
 
-    if (message === '0') message = ''; 
+    if (a.prototype !== b.prototype) throw new Error(message + ' Object prototypes are not equal');
 
-    if (message !== '' && message !== undefined) {
-        message = message + ' ';
-    }
-
-    if (isUndefinedOrNull(a) && isUndefinedOrNull(b)) return true;
-    if (isUndefinedOrNull(a) || isUndefinedOrNull(b)) throw new Error(message + 'Object instances do not match');
-
-    if (a.prototype !== b.prototype) throw new Error(message + 'Object prototypes are not equal');
-
-    if (isArguments(a) !== isArguments(b)) throw new Error(message + 'One of the objects is not a function');
+    if (isArguments(a) !== isArguments(b)) throw new Error(message + ' One of the objects is not a function');
     if (isArguments(a) && isArguments(b)) return recurseObject(pSlice.call(a), pSlice.call(b), message);
 
     if (isBuffer(a)) {
-        if (!isBuffer(b)) throw new Error(message + 'One of the objects is not a buffer');
-        if (a.length !== b.length) throw new Error(message + 'The buffer lengths do not match');
+        if (!isBuffer(b)) throw new Error(message + ' One of the objects is not a buffer');
+        if (a.length !== b.length) throw new Error(message + ' The buffer lengths do not match');
         for (i = 0; i < a.length; i++) {
-            if (a[i] !== b[i]) { 
-                throw new Error(message + 'The buffer values do not match');
+            if (a[i] !== b[i]) {
+                throw new Error(message + ' The buffer values do not match');
             }
         }
-        return true;
+        return OK('equal buffers');
     }
 
     // We now either have an array or an object.
     // We want to match arrays regardless of order ('cos we're mad)
-    
+
     var ka,kb;
     try {
         ka = Object.keys(a),
         kb = Object.keys(b);
-    } 
+    }
     catch (e) {
 
         //happens when one is a string literal and the other isn't
         // happens when two primitives don't match, ie. 1 and 2
-        throw new Error(message + 'expected ' + '\''+ b + '\'' + ' does not match actual ' + '\'' + a + '\'');;
+        throw new Error(message + ' Expected ' + '\''+ b + '\'' + ' does not match actual ' + '\'' + a + '\'');;
     }
 
     var arrays = Array.isArray(a);
@@ -85,7 +90,6 @@ function objectSameValues(a, b, message) {
 
     for (var i = allKeys.length - 1; i >= 0; i--) {
         var key = allKeys[i];
-        message = key;
 
         if (isEmptyOrUndefined(a[key]) && isEmptyOrUndefined(b[key])) {
 
@@ -97,13 +101,15 @@ function objectSameValues(a, b, message) {
 
             if (arrays) {
                 // If we have an array then the key is the position in the array
-                message = "Array position " + message;
+                message += '['+key+']';
+            } else {
+                message += '.'+key;
             }
 
             recurseObject(a[key], b[key], message)
         }
     }
-    return true;
+    return OK('no inequalities found');
 }
 
 function toUnique(a){
@@ -132,7 +138,7 @@ function isBuffer (x) {
 }
 
 function isArguments(x) {
-	return typeof x === "object" && ( "callee" in x ) && typeof x.length === "number";
+    return typeof x === "object" && ( "callee" in x ) && typeof x.length === "number";
 }
 
 (function (provides) {

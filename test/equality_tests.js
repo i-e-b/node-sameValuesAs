@@ -3,23 +3,22 @@ var expect = require('chai').expect;
 var cmp = require("../same-values-as.js").compare;
 
 describe("Comparing values", function() {
-    it("should consider identical values as equal", function(){
-        expect(cmp(1,1)).to.be.true;
-        expect(cmp([1],[1])).to.be.true;
-        expect(cmp([],[])).to.be.true;
-        expect(cmp({},{})).to.be.true;
-        expect(cmp("hello","hello")).to.be.true;
-        expect(cmp({"hello":"world"},{"hello":"world"})).to.be.true;
+    it("should consider identical values as equal", function() {
+        AreEqual(function(){cmp(1,1)}, "numbers");
+        AreEqual(function(){cmp([1],[1])}, "arrays");
+        AreEqual(function(){cmp([],[])}, "empty arrays");
+        AreEqual(function(){cmp({},{})}, "empty objects");
+        AreEqual(function(){cmp("hello","hello")}, "strings");
+        AreEqual(function(){cmp({"hello":"world"},{"hello":"world"})}, "objects");
     });
 
     it("should consider different values as not equal", function(){
-        AreNotEqual(function() { cmp(1,2); });
-        AreNotEqual(function() { cmp([],[1]); });
-        AreNotEqual(function() { cmp([],null); });
-        AreNotEqual(function() { cmp([],null); });
-        AreNotEqual(function() { cmp({},{"1":1}); });
-        AreNotEqual(function() { cmp("hello","world"); });
-        AreNotEqual(function() { cmp({"hello":"world"},{"goodbye":"world"}); });
+        AreNotEqual(function() { cmp(1,2); }, "numbers");
+        AreNotEqual(function() { cmp([],[1]); }, "arrays");
+        AreNotEqual(function() { cmp([],null); }, "array and null");
+        AreNotEqual(function() { cmp({},{"1":1}); }, "objects");
+        AreNotEqual(function() { cmp("hello","world"); }, "strings");
+        AreNotEqual(function() { cmp({"hello":"world"},{"goodbye":"world"}); }, "objects 2");
     });
 
     it("should treat date like strings as equal", function(){
@@ -58,14 +57,14 @@ describe("Comparing values", function() {
                 )).to.be.true;
 
         AreNotEqual(function(){
-            cmp([{"a":{"b":"XXX","d":"e"}, "x":['y','XXX']}], 
+            cmp([{"a":{"b":"XXX","d":"e"}, "x":['y','XXX']}],
                 [{"x":['z','y'], "a":{"d":"e","b":"c"}}]);
         });
     });
 
     it("doesn't compare functions",function(){
 
-        AreNotEqual(function() 
+        AreNotEqual(function()
         {
             cmp({"a":function(a,b){}}, {"a":function(a,b){}});
         });
@@ -83,7 +82,7 @@ describe("Comparing values", function() {
 /**
 * Executes a comparison and asserts that an exception was thrown
 */
-function AreNotEqual(action)
+function AreNotEqual(action, msg)
 {
     var exceptionThrown = false;
 
@@ -96,7 +95,24 @@ function AreNotEqual(action)
         exceptionThrown = true;
     }
 
+    if (! exceptionThrown) console.log(msg);
     expect(exceptionThrown).to.be.true;
+}
 
+function AreEqual(action, msg) {
+    var exceptionThrown = false;
+
+    try
+    {
+        action();
+    }
+    catch (err)
+    {
+        console.log(err);
+        exceptionThrown = true;
+    }
+
+    if (exceptionThrown) console.log(msg);
+    expect(exceptionThrown).to.be.false;
 }
 
