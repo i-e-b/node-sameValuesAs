@@ -28,7 +28,7 @@ That last one should be explained:
 ```javascript
 {
     "one": [2,3,4],
-    "optional: []
+    "optional": []
 }
 ```
 is considered to be equal to
