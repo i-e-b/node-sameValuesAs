@@ -21,8 +21,52 @@ describe("Specific use cases", function() {
             msg = ''+e;
         }
 
-        expect(msg).to.equal('Error: <root>.OrderItem[0].ChildOrderItem.Product.EntityID.ID.RateAttribute[0] Primitive values are not equal');
+        expect(msg).to.equal('Error: <root>.OrderItem[0].Product.RateAttribute Array lengths are different (0 vs 1)');
     });
+    it("should handle minor changes in arrays of objects", function() {
+        var msg = '!! NO ERROR THROWN !!';
 
+        var left = [
+            {
+                id: 'test1',
+                title: 'test attachment 1',
+                url: 'www.sigma-systems.com/test/doc1',
+                source: 0,
+                quoteId: 'a4073b3e-60d5-4ba0-a8df-47cd0f437114'
+            },
+            {
+                id: 'test2',
+                title: 'test attachment 2',
+                url: 'www.sigma-systems.com/test/doc2',
+                source: 0,
+                quoteId: 'a4073b3e-60d5-4ba0-a8df-47cd0f437114'
+            }
+        ];
+        var right = [
+            {
+                id: 'test3',
+                title: 'test attachment 1',
+                url: 'www.sigma-systems.com/test/doc1',
+                source: 0,
+                quoteId: 'a4073b3e-60d5-4ba0-a8df-47cd0f437114'
+            },
+            {
+                id: 'test2',
+                title: 'test attachment 2',
+                url: 'www.sigma-systems.com/test/doc2',
+                source: 0,
+                quoteId: 'a4073b3e-60d5-4ba0-a8df-47cd0f437114'
+            }
+        ];
+
+        try {
+            cmp(left,right);
+        } catch (e) {
+            msg = ''+e;
+        }
+
+        expect(msg).to.equal('Error: <root>[0].id Primitive values are not equal');
+
+    });
 });
 

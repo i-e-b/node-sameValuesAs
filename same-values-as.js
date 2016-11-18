@@ -28,6 +28,22 @@ function recurseObject(actual, expected, message) {
 
     if (primitiveValue(actual) !== primitiveValue(expected)) throw new Error(message + ' Primitive values are not equal');
 
+    // need a special case for arrays of objects here,
+    // otherwise we can get into nasty loops
+    if (Array.isArray(actual) && Array.isArray(expected)) {
+        if (actual.length !== expected.length) {
+            throw new Error(message + ' Array lengths are different ('+(actual.length)+' vs '+(expected.length)+')');
+        }
+
+        actual.sort(sortObject);
+        expected.sort(sortObject);
+
+        for (var i = 0; i < actual.length; i++) {
+            recurseObject(actual[i], expected[i], message+'['+i+']');
+        }
+        return true
+    }
+
     return objectSameValues(actual, expected, message);
 }
 
@@ -64,8 +80,8 @@ function objectSameValues(a, b, message) {
 
     var ka,kb;
     try {
-        ka = Object.keys(a),
-        kb = Object.keys(b);
+        ka = Object.getOwnPropertyNames(a),
+        kb = Object.getOwnPropertyNames(b);
     }
     catch (e) {
 
@@ -92,21 +108,16 @@ function objectSameValues(a, b, message) {
         var key = allKeys[i];
 
         if (isEmptyOrUndefined(a[key]) && isEmptyOrUndefined(b[key])) {
-
             // this is a weird special case for my own purposes.
             // An empty array on an object is considered the same as
             // a missing value, but not the same as null
-        }
-        else {
-
+        } else {
             if (arrays) {
                 // If we have an array then the key is the position in the array
-                message += '['+key+']';
+                recurseObject(a[key], b[key], message+'['+key+']');
             } else {
-                message += '.'+key;
+                recurseObject(a[key], b[key], message+'.'+key);
             }
-
-            recurseObject(a[key], b[key], message)
         }
     }
     return OK('no inequalities found');
